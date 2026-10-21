@@ -23,7 +23,7 @@ jobs:
           java-version: '17'
 
       - name: Unpack Android project
-        run: unzip -q AndroidSensorRepeatability.zip
+        run: unzip -oq AndroidSensorRepeatability.zip
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
