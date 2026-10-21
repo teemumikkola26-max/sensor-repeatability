@@ -23,7 +23,12 @@ jobs:
           java-version: '17'
 
       - name: Unpack Android project
-        run: unzip -oq AndroidSensorRepeatability.zip
+  run: |
+    unzip -oq AndroidSensorRepeatability.zip
+    sed -i 's/sourceCompatibility = JavaVersion.VERSION_1_8/sourceCompatibility = JavaVersion.VERSION_17/' app/build.gradle.kts
+    sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/targetCompatibility = JavaVersion.VERSION_17/' app/build.gradle.kts
+    sed -i '/kotlinOptions/i\    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }' app/build.gradle.kts
+    sed -i '/android {/a\\    compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }' app/build.gradle.kts
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
