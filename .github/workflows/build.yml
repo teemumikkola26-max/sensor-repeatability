@@ -11,7 +11,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -23,12 +22,38 @@ jobs:
           java-version: '17'
 
       - name: Unpack Android project
-  run: |
-    unzip -oq AndroidSensorRepeatability.zip
-    sed -i 's/sourceCompatibility = JavaVersion.VERSION_1_8/sourceCompatibility = JavaVersion.VERSION_17/' app/build.gradle.kts
-    sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/targetCompatibility = JavaVersion.VERSION_17/' app/build.gradle.kts
-    sed -i '/kotlinOptions/i\    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }' app/build.gradle.kts
-    sed -i '/android {/a\\    compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }' app/build.gradle.kts
+        run: unzip -oq AndroidSensorRepeatability.zip
+
+      - name: Fix Java and Kotlin JVM targets
+        run: |
+          cat > app/build.gradle.kts <<'EOF'
+          plugins {
+              id("com.android.application")
+              id("org.jetbrains.kotlin.android")
+          }
+
+          android {
+              namespace = "fi.sensorlab.repeatability"
+              compileSdk = 35
+
+              defaultConfig {
+                  applicationId = "fi.sensorlab.repeatability"
+                  minSdk = 26
+                  targetSdk = 35
+                  versionCode = 1
+                  versionName = "1.0"
+              }
+
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+          }
+          EOF
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
